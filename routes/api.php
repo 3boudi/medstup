@@ -7,6 +7,9 @@ use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\DoctorAuthController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\UserControllerChat;
 
 
 // ---------------- USER AUTH ----------------
@@ -26,14 +29,13 @@ Route::prefix('user')->group(function () {
 // ---------------- ADMIN AUTH ----------------
 Route::prefix('admin')->group(function () {
     Route::post('login', [AdminAuthController::class, 'login']);
-    
     Route::middleware('admin.guard')->group(function () {
         Route::post('logout', [AdminAuthController::class, 'logout']);
-        Route::get('profile', [AdminAuthController::class, 'profile']);
-        Route::post('create', [AdminAuthController::class, 'createAdmin']);
-        Route::get('pending', [AdminAuthController::class, 'pendingDoctors']);
-        Route::post('doctor/{id}/accept', [AdminAuthController::class, 'acceptDoctor']);
-        Route::post('doctor/{id}/reject', [AdminAuthController::class, 'rejectDoctor']);
+        Route::get('profile', [AdminController::class, 'profile']);
+        Route::post('create', [AdminController::class, 'createAdmin']);
+        Route::get('pending', [AdminController::class, 'pendingDoctors']);
+        Route::post('doctor/{id}/accept', [AdminController::class, 'acceptDoctor']);
+        Route::post('doctor/{id}/reject', [AdminController::class, 'rejectDoctor']);
     });
 });
 
@@ -45,7 +47,7 @@ Route::prefix('doctor')->group(function () {
 
     Route::middleware(['doctor.guard'])->group(function () {
         Route::post('logout', [DoctorAuthController::class, 'logout']);
-        Route::get('profile', [DoctorAuthController::class, 'profile']);
+        Route::get('profile', [DoctorController::class, 'profile']);
     });
 });
 

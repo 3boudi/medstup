@@ -53,51 +53,5 @@ class AdminAuthController extends Controller
 
         return response()->json(['message' => 'Logged out successfully']);
     }
-
-
-    public function createAdmin(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|unique:admins,name',
-            'email' => 'required|email|unique:admins,email',
-            'password' => 'required|string|min:6',
-        ]);
-
-        $admin = Admin::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-        ]);
-
-        return response()->json(['message' => 'Admin created successfully', 'admin' => $admin], 201);
-    }
-
-
-    public function pendingDoctors()
-    {
-        $doctors = Doctor::where('status', 'pending')
-            ->with(['clinic', 'specializations'])
-            ->get();
-        return response()->json($doctors);
-    }
-    // ✅ قبول طبيب
-    public function acceptDoctor($id)
-    {
-        $doctor = Doctor::findOrFail($id);
-        $doctor->status = 'accepted';
-        $doctor->save();
-
-        return response()->json(['message' => 'Doctor accepted']);
-    }
-
-    // ✅ رفض طبيب
-    public function rejectDoctor($id)
-    {
-        $doctor = Doctor::findOrFail($id);
-        $doctor->status = 'rejected';
-        $doctor->save();
-
-        return response()->json(['message' => 'Doctor rejected']);
-    }
 }
 //4|ri5A0qoZTCTSA8AsrZiXmJkJaShnQ6S4qEsPrICEbe82cbae

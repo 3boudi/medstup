@@ -93,11 +93,5 @@ public function logout(Request $request)
 
     return response()->json(['message' => 'Logged out successfully']);
 }
-
-
-
-    public function profile(Request $request)
-    {
-        return response()->json($request->user()->load('clinic', 'specializations'));
-    }
+ 
 }
