@@ -118,15 +118,5 @@ class UserAuthController extends Controller
 
         return response()->json(['token' => $token, 'user' => $user]);
     }
-    public function profile(Request $request)
-    {
-        $user = $request->user();
-        if (!$user) {
-            return response()->json(['message' => 'must be logged in'], 401);
-        }
-        return response()->json([
-            'message' => 'User profile retrieved successfully',
-            'user' => $user
-        ], 200);
-    }
+    
 }
