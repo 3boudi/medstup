@@ -16,12 +16,11 @@ return new class extends Migration
     $table->foreignId('chat_id')->constrained()->onDelete('cascade');
     $table->enum('sender_type', ['user', 'doctor']);
     $table->unsignedBigInteger('sender_id');
-    
     $table->enum('type', ['text', 'image', 'file'])->default('text');   
     $table->text('message')->nullable();       
-    $table->json('file_path')->nullable();      
-
+    $table->json('file_path')->nullable();    
     $table->timestamp('sent_at')->useCurrent();
+    $table->timestamps();
 });
 
     }
@@ -29,6 +28,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
+    
     public function down(): void
     {
         Schema::dropIfExists('messages');

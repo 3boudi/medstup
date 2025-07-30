@@ -72,6 +72,9 @@ class DoctorAuthController extends Controller
         if ($doctor->status !== 'accepted') {
             return response()->json(['message' => 'Your account is not approved yet'], 403);
         }
+        if ($doctor->status === 'rejected') {
+            return response()->json(['message' => 'Your account has been rejected'], 403);
+        }
 
         $token = $doctor->createToken('doctor-token')->plainTextToken;
 

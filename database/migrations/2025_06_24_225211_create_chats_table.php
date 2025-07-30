@@ -11,18 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('chats', function (Blueprint $table) {
-            $table->id();
-            $table
-                ->foreignId('consultation_request_id')
-                ->unique()
-                ->constrained('consultation_requests')
-                ->onDelete('cascade');
-            $table->boolean('is_closed')->default(false);
-
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('closed_at')->nullable();
-        });
+     Schema::create('chats', function (Blueprint $table) {
+    $table->id();
+    $table
+        ->foreignId('consultation_request_id')
+        ->unique()
+        ->constrained('consultation_requests')
+        ->onDelete('cascade');
+    $table->boolean('is_closed')->default(false);
+    $table->timestamp('closed_at')->nullable();
+    $table->timestamps(); 
+});
     }
 
     /**
@@ -31,5 +30,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('chats');
+        
     }
 };

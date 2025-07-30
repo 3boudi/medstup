@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Chat extends Model
 {
+    public $timestamps = false;
     protected $fillable = ['consultation_request_id', 'is_closed', 'closed_at'];
 
     public function consultationRequest()
@@ -16,5 +17,14 @@ class Chat extends Model
     {
         return $this->hasMany(Message::class);
     }
-    
+    public function getDoctorAttribute()
+{
+    return $this->consultationRequest->doctor;
+}
+
+public function getUserAttribute()
+{
+    return $this->consultationRequest->user;
+}
+
 }
