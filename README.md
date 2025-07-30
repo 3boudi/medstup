@@ -120,7 +120,7 @@ A comprehensive Laravel-based API for connecting patients with doctors through o
 
 ## 🛠 Technology Stack
 
-- **Backend**: Laravel 11.x
+- **Backend**: Laravel 12.x
 - **Authentication**: Laravel Sanctum
 - **Real-time**: Laravel Broadcasting with Pusher
 - **Database**: SQLite (configurable)
@@ -517,4 +517,4 @@ For support and questions:
 
 ---
 
-**Built with ❤️ by AMIN HALITIM using Laravel**
+**Built by AMIN HALITIM using**
