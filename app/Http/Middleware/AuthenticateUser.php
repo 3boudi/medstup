@@ -20,8 +20,14 @@ class AuthenticateUser
 
         $token = PersonalAccessToken::findToken($accessToken);
 
-        if (! $token || $token->tokenable_type !== User::class) {
+        if (! $token || ! $token->tokenable instanceof User) {
             return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Additional security: Check if token is expired
+        if ($token->expires_at && $token->expires_at->isPast()) {
+            $token->delete();
+            return response()->json(['error' => 'Token expired'], 401);
         }
 
         // ثبت المستخدم

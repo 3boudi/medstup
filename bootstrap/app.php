@@ -13,11 +13,19 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Add CORS middleware
+        $middleware->api(prepend: [
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        ]);
+
         $middleware->alias([
             'admin.guard' => \App\Http\Middleware\AuthenticateAdmin::class,
             'doctor.guard' => \App\Http\Middleware\AuthenticateDoctor::class,
             'user.guard' => \App\Http\Middleware\AuthenticateUser::class,
         ]);
+
+        // Add throttling middleware
+        $middleware->throttleApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

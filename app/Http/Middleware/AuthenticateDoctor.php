@@ -20,8 +20,20 @@ class AuthenticateDoctor
 
         $token = PersonalAccessToken::findToken($accessToken);
 
-        if (! $token || $token->tokenable_type !== Doctor::class) {
+        if (! $token || ! $token->tokenable instanceof Doctor) {
             return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Additional security: Check if token is expired
+        if ($token->expires_at && $token->expires_at->isPast()) {
+            $token->delete();
+            return response()->json(['error' => 'Token expired'], 401);
+        }
+
+        // Check if doctor is still approved
+        if ($token->tokenable->status !== 'accepted') {
+            $token->delete();
+            return response()->json(['error' => 'Account no longer approved'], 401);
         }
 
         // ثبت المستخدم

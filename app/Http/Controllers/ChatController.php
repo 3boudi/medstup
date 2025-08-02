@@ -20,9 +20,37 @@ class ChatController extends Controller
 
     $validated = $request->validate([
         'type' => 'required|in:text,image,file',
-        'message' => 'nullable|string',
-        'file' => 'nullable|file|mimes:jpeg,png,pdf,mp4',
+        'message' => 'nullable|string|max:1000',
+        'file' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf,doc,docx|max:10240', // 10MB max
     ]);
+
+    // Additional security checks for file uploads
+    if ($request->hasFile('file')) {
+        $file = $request->file('file');
+        
+        // Check file size (additional check)
+        if ($file->getSize() > 10 * 1024 * 1024) { // 10MB
+            return response()->json(['error' => 'File size too large. Maximum 10MB allowed.'], 422);
+        }
+
+        // Validate file extension matches MIME type
+        $allowedMimes = [
+            'jpeg' => 'image/jpeg',
+            'jpg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            'pdf' => 'application/pdf',
+            'doc' => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
+
+        $extension = strtolower($file->getClientOriginalExtension());
+        $mimeType = $file->getMimeType();
+
+        if (!isset($allowedMimes[$extension]) || $allowedMimes[$extension] !== $mimeType) {
+            return response()->json(['error' => 'Invalid file type.'], 422);
+        }
+    }
 
     $sender = $request->user();
     $senderType = $sender instanceof \App\Models\Doctor ? 'doctor' : 'user';
@@ -35,7 +63,14 @@ class ChatController extends Controller
 
     $filePath = null;
     if ($request->hasFile('file')) {
-        $path = $request->file('file')->store('chat_files', 'public');
+        $file = $request->file('file');
+        
+        // Generate secure filename
+        $extension = $file->getClientOriginalExtension();
+        $filename = uniqid('chat_', true) . '.' . $extension;
+        
+        // Store with secure filename
+        $path = $file->storeAs('chat_files', $filename, 'public');
         $filePath = [$path];
     }
 

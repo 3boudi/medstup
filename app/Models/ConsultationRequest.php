@@ -6,9 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class ConsultationRequest extends Model
 {
-      public $timestamps = false;
-
     protected $fillable = ['user_id', 'doctor_id', 'status', 'responded_at'];
+
+    protected function casts(): array
+    {
+        return [
+            'responded_at' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ];
+    }
 
     public function user()
     {

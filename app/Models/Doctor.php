@@ -36,12 +36,30 @@ class Doctor extends Authenticatable
         return $this->belongsToMany(Specialization::class, 'doctor_specialization');
     }
 
- public function consultationRequests()
+    public function consultationRequests()
     {
         return $this->hasMany(ConsultationRequest::class);
     }
+
+    public function chats()
+    {
+        return $this->hasManyThrough(Chat::class, ConsultationRequest::class);
+    }
+
+    public function messages()
+    {
+        return $this->morphMany(Message::class, 'sender');
+    }
+
     public function notifications()
     {
         return $this->morphMany(Notification::class, 'notifiable');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+        ];
     }
 }

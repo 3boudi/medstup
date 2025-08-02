@@ -13,14 +13,30 @@ class Message extends Model
         return $this->belongsTo(Chat::class);
     }
 
-   //Polymorphic relationship for sender
+    // Polymorphic relationship for sender
     public function sender()
     {
-        return $this->morphTo(__FUNCTION__, 'sender_type', 'sender_id');
-    }   
-    protected $casts = [
-        'sent_at' => 'datetime',
-        'file_path' => 'array', // Assuming file_path can store multiple file paths as an array
-        'message' => 'string', // Ensure message is cast to string
-    ];
+        return $this->morphTo('sender', 'sender_type', 'sender_id');
+    }
+
+    // Define the morph map for better performance and security
+    public function getMorphClass()
+    {
+        $morphMap = [
+            'user' => \App\Models\User::class,
+            'doctor' => \App\Models\Doctor::class,
+        ];
+
+        return array_search(static::class, $morphMap) ?: static::class;
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'sent_at' => 'datetime',
+            'file_path' => 'array',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ];
+    }
 }

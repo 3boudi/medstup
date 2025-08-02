@@ -11,12 +11,17 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\HealthController;
+
+// ---------------- HEALTH CHECK ----------------
+Route::get('health', [HealthController::class, 'check']);
+Route::get('health/detailed', [HealthController::class, 'detailed']);
 
 // ---------------- USER AUTH ----------------
 Route::prefix('user')->group(function () {
-    Route::post('register', [UserAuthController::class, 'register']);
-    Route::post('login', [UserAuthController::class, 'login']);
-    Route::post('login/google', [UserAuthController::class, 'loginWithGoogle']);
+    Route::post('register', [UserAuthController::class, 'register'])->middleware('throttle:5,1');
+    Route::post('login', [UserAuthController::class, 'login'])->middleware('throttle:10,1');
+    Route::post('login/google', [UserAuthController::class, 'loginWithGoogle'])->middleware('throttle:10,1');
 
     Route::middleware(['user.guard'])->group(function () {
         Route::post('logout', [UserAuthController::class, 'logout']);
@@ -30,15 +35,15 @@ Route::prefix('user')->group(function () {
         Route::get('all-requests-consultation', [UserController::class, 'showAllReqeustsConsultation']);
 
         Route::get('chats', [UserController::class, 'userChats']);
-        Route::get('chats/{chat}/messages', [ChatController::class, 'getMessages']);
-        Route::post('chats/{chat}/send', [ChatController::class, 'sendMessage']);
+        Route::get('chats/{chatId}/messages', [ChatController::class, 'getMessages']);
+        Route::post('chats/{chatId}/send', [ChatController::class, 'sendMessage']);
     });
 });
 
 // ---------------- DOCTOR AUTH ----------------
 Route::prefix('doctor')->group(function () {
-    Route::post('register', [DoctorAuthController::class, 'register']);
-    Route::post('login', [DoctorAuthController::class, 'login']);
+    Route::post('register', [DoctorAuthController::class, 'register'])->middleware('throttle:3,1');
+    Route::post('login', [DoctorAuthController::class, 'login'])->middleware('throttle:10,1');
 
     Route::middleware(['doctor.guard'])->group(function () {
         Route::post('logout', [DoctorAuthController::class, 'logout']);
@@ -49,15 +54,15 @@ Route::prefix('doctor')->group(function () {
 
 
         Route::get('chats', [DoctorController::class, 'doctorChats']);
-        Route::get('chats/{chat}/messages', [ChatController::class, 'getMessages']);
-        Route::post('chats/{chat}/send', [ChatController::class, 'sendMessage']);
-        Route::post('chat/{id}/close', [DoctorController::class, 'closeChat']);
+        Route::get('chats/{chatId}/messages', [ChatController::class, 'getMessages']);
+        Route::post('chats/{chatId}/send', [ChatController::class, 'sendMessage']);
+        Route::post('chats/{chatId}/close', [DoctorController::class, 'closeChat']);
     });
 });
 
 // ---------------- ADMIN AUTH ----------------
 Route::prefix('admin')->group(function () {
-    Route::post('login', [AdminAuthController::class, 'login']);
+    Route::post('login', [AdminAuthController::class, 'login'])->middleware('throttle:5,1');
 
     Route::middleware('admin.guard')->group(function () {
         Route::post('logout', [AdminAuthController::class, 'logout']);
@@ -78,8 +83,5 @@ Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 've
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return response()->json(['message' => 'Verification link sent!']);
-})->middleware(['auth:sanctum', 'throttle:6,1'])->name('verification.send');
+})->middleware(['auth:sanctum', 'throttle:3,1'])->name('verification.send');
 
-// ---------------- CHAT (Send Message) ----------------
-// هذا يبقى عام لأن ممكن يكون المرسل طبيب أو مستخدم
-Route::middleware('auth:sanctum')->post('/chat/send', [ChatController::class, 'sendMessage']);

@@ -21,7 +21,10 @@ class UserAuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json( 'Invalid credentials', 422);
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         $user = User::create([
