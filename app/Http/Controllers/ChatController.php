@@ -21,7 +21,7 @@ class ChatController extends Controller
     $validated = $request->validate([
         'type' => 'required|in:text,image,file',
         'message' => 'nullable|string',
-        'file' => 'nullable|file|mimes:jpeg,png,pdf,mp4|max:20480',
+        'file' => 'nullable|file|mimes:jpeg,png,pdf,mp4',
     ]);
 
     $sender = $request->user();
